@@ -2,25 +2,47 @@
 const menuToggle = document.getElementById('menuToggle');
 const nav = document.getElementById('nav');
 
-menuToggle.addEventListener('click', () => {
-  nav.classList.toggle('open');
-  menuToggle.classList.toggle('active');
-});
-
-// Close menu when a link is clicked
-nav.querySelectorAll('a').forEach(link => {
-  link.addEventListener('click', () => {
-    nav.classList.remove('open');
-    menuToggle.classList.remove('active');
+if (menuToggle && nav) {
+  menuToggle.addEventListener('click', () => {
+    nav.classList.toggle('open');
+    menuToggle.classList.toggle('active');
   });
-});
 
-// Optional: slight header shadow on scroll
+  nav.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => {
+      nav.classList.remove('open');
+      menuToggle.classList.remove('active');
+    });
+  });
+}
+
+// Header shadow on scroll
 const header = document.querySelector('.header');
-window.addEventListener('scroll', () => {
-  if (window.scrollY > 40) {
-    header.style.boxShadow = '0 4px 20px rgba(0,0,0,0.4)';
-  } else {
-    header.style.boxShadow = 'none';
-  }
+if (header) {
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 40) {
+      header.style.boxShadow = '0 4px 20px rgba(0,0,0,0.4)';
+    } else {
+      header.style.boxShadow = 'none';
+    }
+  });
+}
+
+// WhatsApp order: product name + price + page link + picture link
+document.querySelectorAll('.order-whatsapp').forEach(btn => {
+  btn.addEventListener('click', function (e) {
+    e.preventDefault();
+
+    const name = this.getAttribute('data-name') || 'Product';
+    const price = this.getAttribute('data-price') || '';
+    const image = this.getAttribute('data-image') || '';
+    const pageUrl = window.location.href;
+
+    let message = 'Hi MHF SHOP, I want to order this product:\n\n*' + name + '*';
+    if (price) message += '\nPrice: ' + price;
+    message += '\n\nProduct page:\n' + pageUrl;
+    if (image) message += '\n\nProduct picture:\n' + image;
+
+    window.open('https://wa.me/8801324978737?text=' + encodeURIComponent(message), '_blank');
+  });
 });
