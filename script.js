@@ -1,7 +1,6 @@
-// Mobile menu toggle
+// Mobile menu
 const menuToggle = document.getElementById('menuToggle');
 const nav = document.getElementById('nav');
-
 if (menuToggle && nav) {
   menuToggle.addEventListener('click', () => {
     nav.classList.toggle('open');
@@ -15,7 +14,6 @@ if (menuToggle && nav) {
   });
 }
 
-// Header shadow
 const header = document.querySelector('.header');
 if (header) {
   window.addEventListener('scroll', () => {
@@ -23,45 +21,37 @@ if (header) {
   });
 }
 
-// Apply product data from products-data.js
 function applyProductData() {
   if (typeof PRODUCTS === 'undefined') return;
-
   const detail = document.querySelector('.product-detail[data-product]');
   if (detail) {
     const key = detail.getAttribute('data-product');
     const p = PRODUCTS[key];
     if (!p) return;
-
     const title = detail.querySelector('h1');
     const price = detail.querySelector('.detail-price');
     const desc = detail.querySelector('.detail-desc');
     const mainImg = document.getElementById('mainProductImg');
     const thumbs = detail.querySelectorAll('.detail-thumb');
-
     if (title) title.textContent = p.name;
     if (price) price.textContent = p.price;
     if (desc) desc.textContent = p.desc;
-
     if (mainImg && p.images && p.images[0]) {
       mainImg.style.backgroundImage = "url('" + p.images[0] + "')";
       mainImg.setAttribute('data-full', p.images[0]);
     }
-
     thumbs.forEach((thumb, i) => {
       if (p.images[i]) {
         thumb.style.backgroundImage = "url('" + p.images[i] + "')";
         thumb.setAttribute('data-img', p.images[i]);
       }
     });
-
     const orderBtn = detail.querySelector('a.btn-primary');
     if (orderBtn) {
       const msg = 'Hi MHF SHOP, I want to order ' + p.name + ' (' + p.price + ')';
       orderBtn.href = 'https://wa.me/8801324978737?text=' + encodeURIComponent(msg);
     }
   }
-
   document.querySelectorAll('[data-product-card]').forEach(card => {
     const key = card.getAttribute('data-product-card');
     const p = PRODUCTS[key];
@@ -74,17 +64,12 @@ function applyProductData() {
     if (priceEl) priceEl.textContent = p.price;
   });
 }
-
 applyProductData();
 
-// ===== Fullscreen + Zoom lightbox =====
-let scale = 1;
-let posX = 0;
-let posY = 0;
-let isDragging = false;
-let startX = 0;
-let startY = 0;
-let lastTap = 0;
+// ===== Fullscreen lightbox WITH ZOOM BUTTONS =====
+let lbScale = 1;
+let lbX = 0;
+let lbY = 0;
 
 function ensureLightbox() {
   let box = document.getElementById('lightbox');
@@ -93,70 +78,67 @@ function ensureLightbox() {
   box = document.createElement('div');
   box.id = 'lightbox';
   box.className = 'lightbox';
-  box.innerHTML = '<button class="lightbox-close" aria-label="Close">&times;</button><img src="" alt="Product" />';
+  box.innerHTML = `
+    <button class="lightbox-close" type="button" aria-label="Close">&times;</button>
+    <div class="lightbox-stage">
+      <img class="lightbox-img" src="" alt="Product" />
+    </div>
+    <div class="lightbox-controls">
+      <button type="button" class="lb-zoom-out" aria-label="Zoom out">−</button>
+      <button type="button" class="lb-zoom-in" aria-label="Zoom in">+</button>
+    </div>
+  `;
   document.body.appendChild(box);
 
-  const img = box.querySelector('img');
+  const img = box.querySelector('.lightbox-img');
+  const stage = box.querySelector('.lightbox-stage');
 
+  function applyZoom() {
+    img.style.transform = 'translate(' + lbX + 'px,' + lbY + 'px) scale(' + lbScale + ')';
+  }
   function resetZoom() {
-    scale = 1;
-    posX = 0;
-    posY = 0;
-    img.style.transform = 'translate(0,0) scale(1)';
-    img.classList.remove('zoomed');
+    lbScale = 1;
+    lbX = 0;
+    lbY = 0;
+    applyZoom();
   }
-
-  function applyTransform() {
-    img.style.transform = 'translate(' + posX + 'px,' + posY + 'px) scale(' + scale + ')';
-    if (scale > 1) img.classList.add('zoomed');
-    else img.classList.remove('zoomed');
-  }
-
   function close() {
     box.classList.remove('open');
     resetZoom();
   }
 
-  box.querySelector('.lightbox-close').addEventListener('click', close);
-  box.addEventListener('click', (e) => { if (e.target === box) close(); });
+  box.querySelector('.lightbox-close').onclick = close;
+  box.addEventListener('click', (e) => { if (e.target === box || e.target === stage) close(); });
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
 
-  // Double-tap / double-click to zoom
-  img.addEventListener('click', (e) => {
+  // Zoom buttons
+  box.querySelector('.lb-zoom-in').onclick = (e) => {
     e.stopPropagation();
-    const now = Date.now();
-    if (now - lastTap < 300) {
-      if (scale === 1) {
-        scale = 2.5;
-        applyTransform();
-      } else {
-        resetZoom();
-      }
-    }
-    lastTap = now;
-  });
+    lbScale = Math.min(4, lbScale + 0.5);
+    applyZoom();
+  };
+  box.querySelector('.lb-zoom-out').onclick = (e) => {
+    e.stopPropagation();
+    lbScale = Math.max(1, lbScale - 0.5);
+    if (lbScale === 1) { lbX = 0; lbY = 0; }
+    applyZoom();
+  };
 
-  // Mouse wheel zoom (desktop)
-  img.addEventListener('wheel', (e) => {
-    e.preventDefault();
-    const delta = e.deltaY > 0 ? -0.2 : 0.2;
-    scale = Math.min(4, Math.max(1, scale + delta));
-    if (scale === 1) { posX = 0; posY = 0; }
-    applyTransform();
-  }, { passive: false });
-
-  // Pinch zoom (mobile)
+  // Pinch zoom
   let lastDist = 0;
+  let dragging = false;
+  let startX = 0, startY = 0;
+
   img.addEventListener('touchstart', (e) => {
     if (e.touches.length === 2) {
       lastDist = Math.hypot(
         e.touches[0].clientX - e.touches[1].clientX,
         e.touches[0].clientY - e.touches[1].clientY
       );
-    } else if (e.touches.length === 1 && scale > 1) {
-      isDragging = true;
-      startX = e.touches[0].clientX - posX;
-      startY = e.touches[0].clientY - posY;
+    } else if (e.touches.length === 1 && lbScale > 1) {
+      dragging = true;
+      startX = e.touches[0].clientX - lbX;
+      startY = e.touches[0].clientY - lbY;
     }
   }, { passive: true });
 
@@ -168,42 +150,45 @@ function ensureLightbox() {
         e.touches[0].clientY - e.touches[1].clientY
       );
       if (lastDist > 0) {
-        scale = Math.min(4, Math.max(1, scale * (dist / lastDist)));
-        applyTransform();
+        lbScale = Math.min(4, Math.max(1, lbScale * (dist / lastDist)));
+        applyZoom();
       }
       lastDist = dist;
-    } else if (isDragging && e.touches.length === 1) {
+    } else if (dragging && e.touches.length === 1) {
       e.preventDefault();
-      posX = e.touches[0].clientX - startX;
-      posY = e.touches[0].clientY - startY;
-      applyTransform();
+      lbX = e.touches[0].clientX - startX;
+      lbY = e.touches[0].clientY - startY;
+      applyZoom();
     }
   }, { passive: false });
 
   img.addEventListener('touchend', () => {
-    isDragging = false;
+    dragging = false;
     lastDist = 0;
-    if (scale < 1.05) resetZoom();
   });
 
-  // Drag when zoomed (desktop)
+  // Wheel zoom desktop
+  stage.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    lbScale = Math.min(4, Math.max(1, lbScale + (e.deltaY > 0 ? -0.25 : 0.25)));
+    if (lbScale === 1) { lbX = 0; lbY = 0; }
+    applyZoom();
+  }, { passive: false });
+
+  // Drag when zoomed (mouse)
   img.addEventListener('mousedown', (e) => {
-    if (scale <= 1) return;
-    isDragging = true;
-    startX = e.clientX - posX;
-    startY = e.clientY - posY;
-    img.style.cursor = 'grabbing';
+    if (lbScale <= 1) return;
+    dragging = true;
+    startX = e.clientX - lbX;
+    startY = e.clientY - lbY;
   });
   window.addEventListener('mousemove', (e) => {
-    if (!isDragging) return;
-    posX = e.clientX - startX;
-    posY = e.clientY - startY;
-    applyTransform();
+    if (!dragging) return;
+    lbX = e.clientX - startX;
+    lbY = e.clientY - startY;
+    applyZoom();
   });
-  window.addEventListener('mouseup', () => {
-    isDragging = false;
-    if (img) img.style.cursor = scale > 1 ? 'grab' : 'zoom-in';
-  });
+  window.addEventListener('mouseup', () => { dragging = false; });
 
   box._resetZoom = resetZoom;
   return box;
@@ -212,16 +197,13 @@ function ensureLightbox() {
 function openFullscreen(url) {
   if (!url) return;
   const box = ensureLightbox();
-  const img = box.querySelector('img');
-  img.src = url;
+  box.querySelector('.lightbox-img').src = url;
   if (box._resetZoom) box._resetZoom();
   box.classList.add('open');
 }
 
-// Gallery thumbs + open fullscreen
 const mainImgEl = document.getElementById('mainProductImg');
 const thumbEls = document.querySelectorAll('.detail-thumb');
-
 if (mainImgEl && thumbEls.length) {
   thumbEls.forEach(thumb => {
     thumb.addEventListener('click', () => {
@@ -234,7 +216,6 @@ if (mainImgEl && thumbEls.length) {
       thumb.classList.add('active');
     });
   });
-
   mainImgEl.addEventListener('click', () => {
     const url = mainImgEl.getAttribute('data-full') ||
       (mainImgEl.style.backgroundImage || '').replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
