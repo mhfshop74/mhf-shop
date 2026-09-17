@@ -7,7 +7,7 @@ const PRODUCTS = {
 
   "formal-shirt": {
     name: "Classic Formal Shirt",
-    price: "৳ 1,250",
+    price: "৳ 233",
     desc: "Premium cotton formal shirt with a modern slim fit. Perfect for office, meetings, or any formal occasion.",
     images: [
       "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?auto=format&fit=crop&w=800&q=80",
