@@ -10,7 +10,7 @@ const PRODUCTS = {
     price: "৳ 650",
     desc: "Premium cotton DROPSHOULDER with a modern acid wash design. Perfect for stylish look , or any vacation.",
     images: [
-      "https://www.image2url.com/r2/default/images/1789668643661-d1fd06cb-b36b-4027-a9e8-8302c85866f7.jpg",
+      "https://www.image2url.com/r2/default/images/1789669875084-592614d8-61da-4069-92d9-2633db642677.jpg",
       "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?auto=format&fit=crop&w=800&q=80",
       "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?auto=format&fit=crop&w=800&q=80",
       "https://images.unsplash.com/photo-1617137968427-85924c800a22?auto=format&fit=crop&w=800&q=80"
