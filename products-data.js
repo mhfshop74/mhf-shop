@@ -6,11 +6,11 @@
 const PRODUCTS = {
 
   "formal-shirt": {
-    name: "Classic Formal Shirt",
-    price: "৳ 233",
-    desc: "Premium cotton formal shirt with a modern slim fit. Perfect for office, meetings, or any formal occasion.",
+    name: "PREMIUM ACID WASH DROPSHOULDER",
+    price: "৳ 650",
+    desc: "Premium cotton DROPSHOULDER with a modern acid wash design. Perfect for stylish look , or any vacation.",
     images: [
-      "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?auto=format&fit=crop&w=800&q=80",
+      "https://imgur.com/a/TIPeqQo",
       "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?auto=format&fit=crop&w=800&q=80",
       "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?auto=format&fit=crop&w=800&q=80",
       "https://images.unsplash.com/photo-1617137968427-85924c800a22?auto=format&fit=crop&w=800&q=80"
