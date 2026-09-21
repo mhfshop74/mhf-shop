@@ -29,7 +29,7 @@ const PRODUCTS = {
     ]
   },
 
-  "fresh black dropshoulder": {
+  "denim-jeans": {
     name: "PREMIUM FRESH BLACK DROPSHOULDER",
     price: "৳600",
     desc: "PREMIUM BLACK T-SHIRT PERFECT FOR DASHING LOOK.MADE WITH 100% COTTON FABRIC.",
