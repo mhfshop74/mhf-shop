@@ -29,12 +29,12 @@ const PRODUCTS = {
     ]
   },
 
-  "denim-jeans": {
-    name: "Denim Jeans",
-    price: "৳ 1,850",
-    desc: "Modern stretch denim jeans with a comfortable fit. Durable fabric that holds its shape.",
+  "fresh black dropshoulder": {
+    name: "PREMIUM FRESH BLACK DROPSHOULDER",
+    price: "৳600",
+    desc: "PREMIUM BLACK T-SHIRT PERFECT FOR DASHING LOOK.MADE WITH 100% COTTON FABRIC.",
     images: [
-      "https://images.unsplash.com/photo-1594938298603-c8148c4dae35?auto=format&fit=crop&w=800&q=80",
+      "https://www.image2url.com/r2/default/images/1789984832789-058143a0-a111-41d5-a3f7-250d7869656e.webp",
       "https://images.unsplash.com/photo-1542272604-787c3835535d?auto=format&fit=crop&w=800&q=80",
       "https://images.unsplash.com/photo-1475178626620-a4d07496769f?auto=format&fit=crop&w=800&q=80",
       "https://images.unsplash.com/photo-1604176354204-9268737828e4?auto=format&fit=crop&w=800&q=80"
